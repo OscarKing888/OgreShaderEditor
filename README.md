@@ -4,6 +4,10 @@
 部分截图：:smile_cat:
 ---------------------
 ![Image](screenshot.png)
+
+* 类图跟代码应该还能对上……
+
+![Image](ShaderEditor.png)
 ![Image](code.gif)
 ![Video](ShaderEditor.avi)
 
