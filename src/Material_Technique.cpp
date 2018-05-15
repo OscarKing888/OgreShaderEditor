@@ -6,7 +6,7 @@
 #include "ConnectionLine.h"
 #include "MaterialGlobalGpuParameters.h"
 
-namespace Ogen
+namespace Ogre
 {
 	//--------------------------------------------------------------------------------
 	// TechniqueSocket

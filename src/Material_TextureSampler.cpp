@@ -2,7 +2,7 @@
 #include "Material_TextureSampler.h"
 #include "MaterialGlobalGpuParameters.h"
 
-namespace Ogen
+namespace Ogre
 {
 	Material_TextureSampler::Material_TextureSampler(const String& name)
 		: MaterialExpression(name, true)
@@ -42,9 +42,17 @@ namespace Ogen
 	//--------------------------------------------------------------------------------
 	void Material_TextureSampler::compileExpression(String& outCode, IExpressionParameter* outputParameter)
 	{
+		String funName = getFunctionName(outputParameter);
+		if(isFunctionCompiled(funName))
+		{
+			return;
+		}
+
+		addCompiledFunction(funName);
+
 		outCode += formatString("%s %s(PS_INPUT input)\n",
 			outputParameter->getParameterType().c_str(),
-			getFunctionName().c_str());
+			getFunctionName(outputParameter).c_str());
 
 		outCode += formatString("{\n\t return tex2D(%s, input.%s)%s; \n}\n",
 			getVarName().c_str(),
@@ -72,22 +80,28 @@ namespace Ogen
 		return formatString("uv%d", _texCoordIndex);
 	}
 	//--------------------------------------------------------------------------------
-	String Material_TextureSampler::getFunctionName() const
+	String Material_TextureSampler::getFunctionName(IExpressionParameter* output) const
 	{
-		return formatString("get_%s", getVarName().c_str());
+		String c = output->getComponents();
+		if(!c.empty())
+		{
+			c[0] = '_';
+		}
+
+		return formatString("get_%s%s", getVarName().c_str(), c.c_str());
 	}
 	//--------------------------------------------------------------------------------
-	String Material_TextureSampler::compileExpressionCallStart() const
+	String Material_TextureSampler::compileExpressionCallStart(IExpressionParameter* output) const
 	{
-		return getFunctionName() + "(";
+		return getFunctionName(output) + "(";
 	}
 	//--------------------------------------------------------------------------------
-	String Material_TextureSampler::compileExpressionCallArguments() const
+	String Material_TextureSampler::compileExpressionCallArguments(IExpressionParameter* output) const
 	{
 		return ShaderCompileContex::PSInputParameterName;
 	}
 	//--------------------------------------------------------------------------------
-	String Material_TextureSampler::compileExpressionCallEnd() const
+	String Material_TextureSampler::compileExpressionCallEnd(IExpressionParameter* output) const
 	{
 		return ")";
 	}

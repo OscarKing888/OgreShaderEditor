@@ -1,7 +1,7 @@
 #pragma once
 #include "GlyphBlock.h"
 
-namespace Ogen
+namespace Ogre
 {
 	class BlockWithView : public GlyphBlock
 	{
@@ -19,6 +19,8 @@ namespace Ogen
 
 		void setViewMaterial(MaterialPtr mat);
 		void setViewMaterial(const String& matName);
+
+		Pass* getViewMaterialPass() const;
 
 		virtual void layout();
 

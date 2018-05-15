@@ -5,7 +5,7 @@
 #include "OgrePass.h"
 #include "OgreTextureUnitState.h"
 
-namespace Ogen
+namespace Ogre
 {
 	PanelGlyph::PanelGlyph(const String& name)
 		: MaterialGlyph(name)

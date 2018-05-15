@@ -8,7 +8,7 @@
 #include "OgreHighLevelGpuProgramManager.h"
 #include "MaterialGlobalGpuParameters.h"
 
-namespace Ogen
+namespace Ogre
 {
 	Material_Pass::Material_Pass(Material_Technique* parent, const String& name)
 		: BlockWithView(name)
@@ -19,7 +19,7 @@ namespace Ogen
 		//addInputSocket(new InputOutputSocket(name + "/Specular", true, this, "Specular", "float4"));
 		//addInputSocket(new InputOutputSocket(name + "/SpecularPower", true, this, "Sp.Power", "float4"));
 	
-		addOutputSocket(new InputOutputSocket(name + "/Output", false, this, "", "float3"));
+		addOutputSocket(new InputOutputSocket(name + "/Output", false, this, "", "float4"));
 
 		setDimisions(140, 130);
 		setViewFillColour(ColourValue::Black);
@@ -32,6 +32,8 @@ namespace Ogen
 	//--------------------------------------------------------------------------------
 	void Material_Pass::compile(MaterialPtr mat, Technique* tech, size_t passIdx)
 	{
+		ShaderCompileContex::reset();
+
 		if(passIdx >= tech->getNumPasses())
 		{
 			tech->createPass();
@@ -41,29 +43,9 @@ namespace Ogen
 
 		ShaderCompileContex::CurrentPass = pass;
 
-		HighLevelGpuProgramPtr gpuProg;
-		if(!HighLevelGpuProgramManager::getSingleton().resourceExists(_name))
-		{
-			gpuProg = HighLevelGpuProgramManager::getSingleton().createProgram(_name,
-				ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME, "hlsl", GPT_FRAGMENT_PROGRAM);
-
-			gpuProg->setParameter("entry_point", "ps_2_0");
-			gpuProg->setParameter("target", "ps_2_0");
-			//gpuProg->setSyntaxCode("ps_2_0");
-
-// 			gpuProg->setMorphAnimationIncluded(false);
-// 			gpuProg->setPoseAnimationIncluded(0);
-// 			gpuProg->setSkeletalAnimationIncluded(false);
-// 			gpuProg->setVertexTextureFetchRequired(false);
-			//GpuNamedConstants::setGenerateAllConstantDefinitionArrayEntries(true);
- 			//gpuProg->getDefaultParameters();
-		}
-		else
-		{
-			gpuProg = HighLevelGpuProgramPtr(HighLevelGpuProgramManager::getSingleton().getByName(_name));
-		}
+		HighLevelGpuProgramPtr gpuProg = ShaderUtil::createOrGetPS(_name);
 		
-
+		ShaderCompileContex::CurrentPS = gpuProg.get();
 		//GpuProgramManager::getSingleton().getSupportedSyntax()
 
 		// generate shader code(HLSL only current)
@@ -101,7 +83,7 @@ namespace Ogen
 			+ "		return float4(cos(timeVal), 1, sin(timeVal), 1);\n"
 			+ "}\n";
 #else
-		hlslCode += String("uniform float timeVal;\n");
+		//hlslCode += String("uniform float timeVal;\n");
 
 		String psCall;
 		compilePSCall(diffuseInput, psCall);
@@ -120,7 +102,7 @@ namespace Ogen
 					+ ShaderCompileContex::PSInputParameterName
 					+ ") : COLOR\n"
 					+ "{\n"
-					+ "\treturn sin(timeVal) + diffuse("
+					+ "\treturn diffuse("
 					+ ShaderCompileContex::PSInputParameterName
 					+ ");\n"
 					+ "}\n";
@@ -143,9 +125,11 @@ namespace Ogen
 		//gpuProg->getConstantDefinitions()->generateConstantDefinitionArrayEntries("time", GpuConstantDefinition);
 		//gps->setAutoConstant(0, GpuProgramParameters::ACT_TIME);
 		//gps->setNamedAutoConstant("timeVal", GpuProgramParameters::ACT_TIME, 1);
-		gps->setNamedConstantFromTime("timeVal", 1);
+		//gps->setNamedConstantFromTime("timeVal", 1);
 		gpuProg->getNamedConstants().save("test.txt");
 		
+		diffuseInput->getConnectionLine(0)->getOutputParameter()->getParentExpression()->postCompile();
+
 		//::Sleep(3000);
 		//gps->setNamedAutoConstantReal("timeVal", GpuProgramParameters::ACT_TIME, 1);
 		pass->setFragmentProgram(_name);
@@ -201,8 +185,9 @@ namespace Ogen
 			me->startCompileExpressionDeclaration();
 			me->compileExpressionDeclaration(outCode);
 			me->endCompileExpressionDeclaration();
-
-			outCode += "\n//--------------------------------------------------------------------------------\n";
+			
+			outCode += "\n";
+			//outCode += "\n//--------------------------------------------------------------------------------\n";
 		}
 	}
 	//--------------------------------------------------------------------------------
@@ -228,7 +213,9 @@ namespace Ogen
 			}
 
 			me->compileExpression(outCode, output);
-			outCode += "\n//--------------------------------------------------------------------------------\n";
+
+			outCode += "\n";
+			//outCode += "\n//--------------------------------------------------------------------------------\n";
 		}
 	}
 	//--------------------------------------------------------------------------------
@@ -245,8 +232,8 @@ namespace Ogen
 			IExpressionParameter* output = l->getOutputParameter();
 			IMaterialExpression* me = output->getParentExpression();
 
-			outCode += me->compileExpressionCallStart();
-			outCode += me->compileExpressionCallArguments();
+			outCode += me->compileExpressionCallStart(output);
+			outCode += me->compileExpressionCallArguments(output);
 
 // 			// pre-order traversal
 // 			size_t inCount = me->getInputParametersCount();
@@ -256,7 +243,7 @@ namespace Ogen
 // 				compilePSCall(ep, outCode);
 // 			}
 
-			outCode += me->compileExpressionCallEnd();
+			outCode += me->compileExpressionCallEnd(output);
 		}
 	}
 

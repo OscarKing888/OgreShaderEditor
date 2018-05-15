@@ -3,7 +3,7 @@
 #include "PanelGlyph.h"
 #include "IMaterialExpression.h"
 
-namespace Ogen
+namespace Ogre
 {
 	class CaptionBar;
 	class GlyphBlock;

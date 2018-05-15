@@ -1,19 +1,15 @@
 #include "stdafx.h"
 #include "Material_DotProduct.h"
-#include "OgreMaterialManager.h"
-#include "OgreTechnique.h"
-#include "OgrePass.h"
-#include "OgreTextureUnitState.h"
 
-namespace Ogen
+namespace Ogre
 {
 	Material_DotProduct::Material_DotProduct(const String& name)
-		: MaterialExpression(name, false)
+		: Material_Function(name)
 	{
-		addInputSocket(new InputOutputSocket(name + "/A", true, this, "A", "float3"));
-		addInputSocket(new InputOutputSocket(name + "/B", true, this, "B", "float3"));
+		addInputSocket(new InputOutputSocket(name + "/A", true, this, "A", "float4"));
+		addInputSocket(new InputOutputSocket(name + "/B", true, this, "B", "float4"));
 
-		addOutputSocket(new InputOutputSocket(name + "/Output", false, this, "", "float3"));
+		addOutputSocket(new InputOutputSocket(name + "/Output", false, this, "", "float4"));
 
 		setDimisions(140, 130);
 		setViewFillColour(ColourValue::Black);
@@ -23,5 +19,4 @@ namespace Ogen
 	Material_DotProduct::~Material_DotProduct()
 	{
 	}
-
 }

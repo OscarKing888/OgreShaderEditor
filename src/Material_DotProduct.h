@@ -1,9 +1,9 @@
 #pragma once
-#include "MaterialExpression.h"
+#include "Material_Function.h"
 
-namespace Ogen
+namespace Ogre
 {
-	class Material_DotProduct : public MaterialExpression
+	class Material_DotProduct : public Material_Function
 	{
 	public:
 
@@ -12,5 +12,6 @@ namespace Ogen
 
 	protected:
 
+		virtual String getFunctionName() const { return "dot"; }
 	};
 }

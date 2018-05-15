@@ -15,7 +15,7 @@
 
 
 
-namespace Ogen
+namespace Ogre
 {
 	class MaterialGlyph
 	{

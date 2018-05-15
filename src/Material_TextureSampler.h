@@ -1,7 +1,7 @@
 #pragma once
 #include "MaterialExpression.h"
 
-namespace Ogen
+namespace Ogre
 {
 	class Material_TextureSampler : public MaterialExpression
 	{
@@ -13,9 +13,9 @@ namespace Ogen
 		virtual void compileExpression(String& outCode, IExpressionParameter* outputParameter);
 		virtual void compileInputStruct(StrMap& outMap);
 
-		virtual String compileExpressionCallStart() const;
-		virtual String compileExpressionCallArguments() const;
-		virtual String compileExpressionCallEnd() const;
+		virtual String compileExpressionCallStart(IExpressionParameter* output) const;
+		virtual String compileExpressionCallArguments(IExpressionParameter* output) const;
+		virtual String compileExpressionCallEnd(IExpressionParameter* output) const;
 
 	protected:
 
@@ -25,6 +25,6 @@ namespace Ogen
 		virtual void compileExpressionDeclarationImp(String& outCode);
 		String getVarName() const;
 		String getUVName() const;
-		String getFunctionName() const;
+		String getFunctionName(IExpressionParameter* output) const;
 	};
 }

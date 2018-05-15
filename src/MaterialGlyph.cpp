@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "MaterialGlyph.h"
 
-namespace Ogen
+namespace Ogre
 {
 	MaterialGlyph::MaterialGlyph(const String& name)
 		: _name(name)

@@ -1,17 +1,16 @@
 #pragma once
-#include <Ogen.h>
 
-namespace Ogen
+namespace Ogre
 {
 	class MaterialGlobalGpuParameters
 	{
 	public:
 		
-		static ColourValue MaterialAmbientColor;
-		static String MaterialAmbientColorName;
+		static ColourValue SceneAmbientColor;
+		static String SceneAmbientColorName;
 
-		static void setMaterialAmbientColor(GpuProgramParametersSharedPtr gpp);
-		static void setMaterialAmbientColor(const String& parameterName, GpuProgramParametersSharedPtr gpp);
+		static void setSceneAmbientColor(GpuProgramParametersSharedPtr gpp);
+		static void setSceneAmbientColor(const String& parameterName, GpuProgramParametersSharedPtr gpp);
 
 	};
 
@@ -28,8 +27,17 @@ namespace Ogen
 		static Material* CurrentMaterial;
 		static Technique* CurrentTechnique;
 		static Pass* CurrentPass;
+		static HighLevelGpuProgram* CurrentPS;
 
 		static void reset();
 	};
 
+	//--------------------------------------------------------------------------------
+	class ShaderUtil
+	{
+	public:
+
+		static HighLevelGpuProgramPtr createOrGetPS(const String& name);
+	
+	};
 }

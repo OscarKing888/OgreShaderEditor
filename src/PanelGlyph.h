@@ -1,7 +1,7 @@
 #pragma once
 #include "MaterialGlyph.h"
 
-namespace Ogen
+namespace Ogre
 {
 	class PanelGlyph : public MaterialGlyph
 	{

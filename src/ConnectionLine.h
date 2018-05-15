@@ -2,7 +2,7 @@
 #include "MaterialGlyph.h"
 #include "IMaterialExpression.h"
 
-namespace Ogen
+namespace Ogre
 {
 	class InputOutputSocket;
 	class LineOverlayElement;

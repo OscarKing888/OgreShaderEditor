@@ -5,7 +5,7 @@
 #include "OgrePass.h"
 #include "OgreTextureUnitState.h"
 
-namespace Ogen
+namespace Ogre
 {
 	BlockWithView::BlockWithView(const String& name)
 		: GlyphBlock(name)
@@ -78,4 +78,8 @@ namespace Ogen
 		_viewPanel->setMaterialName(matName);
 	}
 	//--------------------------------------------------------------------------------
+	Pass* BlockWithView::getViewMaterialPass() const
+	{
+		return _viewMaterial->getTechnique(0)->getPass(0);
+	}
 }

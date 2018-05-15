@@ -2,7 +2,7 @@
 #include "MaterialGlyph.h"
 #include "OgreFrameListener.h"
 
-namespace Ogen
+namespace Ogre
 {
 	class PanelGlyph;
 

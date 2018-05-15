@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "MaterialExpression.h"
 
-namespace Ogen
+namespace Ogre
 {
 	MaterialExpression::MaterialExpression(const String& name, bool needDeclaration)
 		: BlockWithView(name)
@@ -18,7 +18,6 @@ namespace Ogen
 	//--------------------------------------------------------------------------------
 	void MaterialExpression::startCompileExpressionDeclaration()
 	{
-		_compileDeclarationOnce = false;
 	}
 	//--------------------------------------------------------------------------------
 	void MaterialExpression::compileExpressionDeclaration(String& outCode)
@@ -35,7 +34,6 @@ namespace Ogen
 	//--------------------------------------------------------------------------------
 	void MaterialExpression::endCompileExpressionDeclaration()
 	{
-		_compileDeclarationOnce = false;
 	}
 	//--------------------------------------------------------------------------------
 	void MaterialExpression::compileExpression(String& outCode, IExpressionParameter* outputParameter)
@@ -73,19 +71,55 @@ namespace Ogen
 
 	}
 	//--------------------------------------------------------------------------------
-	String MaterialExpression::compileExpressionCallStart() const
+	String MaterialExpression::compileExpressionCallStart(IExpressionParameter* output) const
 	{
 		return "";
 	}
 	//--------------------------------------------------------------------------------
-	String MaterialExpression::compileExpressionCallArguments() const
+	String MaterialExpression::compileExpressionCallArguments(IExpressionParameter* output) const
 	{
 		return "";
 	}
 	//--------------------------------------------------------------------------------
-	String MaterialExpression::compileExpressionCallEnd() const
+	String MaterialExpression::compileExpressionCallEnd(IExpressionParameter* output) const
 	{
 		return "";
 	}
 	//--------------------------------------------------------------------------------	
+	void MaterialExpression::resetForCompile()
+	{
+		_compiledFunctionMap.clear();
+		_compileDeclarationOnce = false;
+	}
+	//--------------------------------------------------------------------------------	
+	void MaterialExpression::addCompiledFunction(const String& funName)
+	{
+		_compiledFunctionMap.insert(std::make_pair(funName, true));
+	}
+	//--------------------------------------------------------------------------------	
+	bool MaterialExpression::isFunctionCompiled(const String& funName) const
+	{
+		CompiledFunctionMap::const_iterator it = _compiledFunctionMap.find(funName);
+		if(it != _compiledFunctionMap.end())
+		{
+			return it->second;
+		}
+
+		return false;
+	}
+	//--------------------------------------------------------------------------------
+	void MaterialExpression::postCompile()
+	{
+		for (size_t i = 0; i < getInputParametersCount(); ++i)
+		{
+			IExpressionParameter* p = getInputParameter(i);
+			if(p->getConnectionLineCount() > 0)
+			{
+				IMaterialExpression* me =
+					p->getConnectionLine(0)->getOutputParameter()->getParentExpression();
+				me->postCompile();
+			}
+		}
+	}
+
 }

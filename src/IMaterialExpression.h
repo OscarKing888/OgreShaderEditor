@@ -1,7 +1,6 @@
 #pragma once
-#include <Ogen.h>
 
-namespace Ogen
+namespace Ogre
 {
 	class IMaterialExpression;
 	class IExpressionParameter;
@@ -37,6 +36,8 @@ namespace Ogen
 	{
 	public:
 
+		virtual void resetForCompile() = 0;
+
 		virtual size_t getInputParametersCount() const = 0;
 		virtual size_t getOutputParametersCount() const = 0;
 
@@ -52,8 +53,10 @@ namespace Ogen
 		virtual void compileExpression(String& outCode, IExpressionParameter* outputParameter) = 0;
 
 
-		virtual String compileExpressionCallStart() const = 0;
-		virtual String compileExpressionCallArguments() const = 0;
-		virtual String compileExpressionCallEnd() const = 0;
+		virtual String compileExpressionCallStart(IExpressionParameter* output) const = 0;
+		virtual String compileExpressionCallArguments(IExpressionParameter* output) const = 0;
+		virtual String compileExpressionCallEnd(IExpressionParameter* output) const = 0;
+
+		virtual void postCompile() = 0;
 	};	
 }

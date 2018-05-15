@@ -4,7 +4,7 @@
 #include "OgreFontManager.h"
 #include "OgreRoot.h"
 
-namespace Ogen
+namespace Ogre
 {
 	CaptionBar::CaptionBar(const String& name, const DisplayString& caption)
 		: MaterialGlyph(name)

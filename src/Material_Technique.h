@@ -1,7 +1,7 @@
 #pragma once
 #include "BlockWithView.h"
 
-namespace Ogen
+namespace Ogre
 {
 	class Material_Pass;
 	class Material_Root;

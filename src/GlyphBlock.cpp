@@ -4,11 +4,11 @@
 #include "PanelGlyph.h"
 #include "ConnectionLine.h"
 
-namespace Ogen
+namespace Ogre
 {
 	static const Real C_SocketWidth = 11.0;
 	static const Real C_SocketHeight = 8.0;
-	static const Real C_SocketSpacing = 16.0;
+	static const Real C_SocketSpacing = 10.0;
 	static const Real C_SocketInitSpacing = 12.0;
 
 	//--------------------------------------------------------------------------------

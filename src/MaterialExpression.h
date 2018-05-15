@@ -2,7 +2,7 @@
 #include "BlockWithView.h"
 #include "IMaterialExpression.h"
 
-namespace Ogen
+namespace Ogre
 {	
 	class MaterialExpression : public BlockWithView, public IMaterialExpression
 	{
@@ -25,9 +25,13 @@ namespace Ogen
 
 		virtual void compileExpression(String& outCode, IExpressionParameter* outputParameter);
 
-		virtual String compileExpressionCallStart() const;
-		virtual String compileExpressionCallArguments() const;
-		virtual String compileExpressionCallEnd() const;
+		virtual String compileExpressionCallStart(IExpressionParameter* output) const;
+		virtual String compileExpressionCallArguments(IExpressionParameter* output) const;
+		virtual String compileExpressionCallEnd(IExpressionParameter* output) const;
+
+		virtual void resetForCompile();
+
+		virtual void postCompile();
 
 	protected:
 
@@ -35,5 +39,11 @@ namespace Ogen
 		bool _compileDeclarationOnce;
 
 		virtual void compileExpressionDeclarationImp(String& outCode);
+
+		typedef std::map<String, bool> CompiledFunctionMap;
+		CompiledFunctionMap _compiledFunctionMap;
+
+		void addCompiledFunction(const String& funName);
+		bool isFunctionCompiled(const String& funName) const;
 	};
 }

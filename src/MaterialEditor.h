@@ -20,30 +20,12 @@ LGPL like the rest of the engine.
         and controllers for automatic time-relative behaviour.
 */
 
-
 #include "ExampleApplication.h"
-#include <FyTextAreaOverlayElement.h>
-#include <FyFontManager.h>
-#include <FyBorderPanelOverlayElement.h>
+#include <OgreTextAreaOverlayElement.h>
+#include <OgreFontManager.h>
+#include <OgreBorderPanelOverlayElement.h>
 
-#include "OgreLineOverlayElement.h"
-#include "OgreArrowOverlayElement.h"
-
-#include "PanelGlyph.h"
-#include "CaptionBar.h"
-#include "GlyphBlock.h"
-#include "ConnectionLine.h"
-
-
-#include "Material_TextureSampler.h"
-#include "Material_DotProduct.h"
-#include "Material_AutoConstant.h"
-#include "Material_If.h"
-#include "Material_Multiply.h"
-
-#include "Material_Root.h"
-#include "Material_Technique.h"
-#include "Material_Pass.h"
+#include "MaterialShaderCompiler.h"
 
 namespace MaterialEditor
 {
@@ -261,7 +243,7 @@ protected:
 // 		ResourceHandle rh = FontManager::getSingleton().getResourceIterator().peekNextKey();
 // 		String fnt = FontManager::getSingleton().getByHandle(rh)->getName();
 // 		ole->setFontName(fnt);
-// 		ole->setMetricsMode(Ogre::GMM_PIXELS);
+// 		ole->setMetricsMode(Fantasy::GMM_PIXELS);
 // 		ole->setCharHeight(26);
 // 		ole->setDimensions(300, 100);
 // 		olc->addChild(ole);
@@ -269,7 +251,7 @@ protected:
 // 		ole = dynamic_cast<TextAreaOverlayElement*>(om.createOverlayElement("TextArea", "testt2"));
 // 		ole->setCaption("~!@#@#%#$%$^&*^*((*)*(_+|`");		
 // 		ole->setFontName(fnt);
-// 		ole->setMetricsMode(Ogre::GMM_PIXELS);
+// 		ole->setMetricsMode(Fantasy::GMM_PIXELS);
 // 		ole->setCharHeight(26);
 // 		ole->setDimensions(300, 100);
 // 		ole->setPosition(400, 400);	
@@ -353,6 +335,36 @@ protected:
 		mtl->addToContainer(olc);
 #endif
 
+#if 1
+		Material_ComposeVector4* aMaterial_ComposeVector4 = new Material_ComposeVector4("Material_ComposeVector4");
+		aMaterial_ComposeVector4->setPosition(10, 600);
+		ol->add2D(aMaterial_ComposeVector4->getRootContainer());
+
+		Material_OneMinus* aMaterial_OneMinus = new Material_OneMinus("Material_OneMinus");
+		aMaterial_OneMinus->setPosition(200, 600);
+		ol->add2D(aMaterial_OneMinus->getRootContainer());
+
+		Material_Negative* aMaterial_Negative = new Material_Negative("Material_Negative");
+		aMaterial_Negative->setPosition(400, 600);
+		ol->add2D(aMaterial_Negative->getRootContainer());
+
+		Material_AutoConstant* sinTime = new Material_AutoConstant("Material_AutoConstant");
+		sinTime->setPosition(1000, 550);
+		ol->add2D(sinTime->getRootContainer());
+
+		//ol->setScale(0.5, 0.5);
+
+		Material_SceneAmbient* aMaterial_SceneAmbient = new Material_SceneAmbient("Material_SceneAmbient");
+		aMaterial_SceneAmbient->setPosition(1000, 200);
+		ol->add2D(aMaterial_SceneAmbient->getRootContainer());
+
+		Material_If* ifc = new Material_If("Material_If");
+		ifc->setPosition(800, 400);
+		ol->add2D(ifc->getRootContainer());
+
+
+#endif
+
 		Material_Root* mroot = new Material_Root("Material_Root");
 		Vector2 pos = Vector2(10, 10);
 		mroot->setPosition(pos.x, pos.y);
@@ -360,24 +372,90 @@ protected:
 
 		Material_Technique* mtech = mroot->createTechnique("Default");
 		mroot->addTechnique(mtech);
-		pos = Vector2(300, 100);
+		pos = Vector2(200, 100);
 		mtech->setPosition(pos.x, pos.y);
 		ol->add2D(mtech->getRootContainer());
 
 		Material_Pass* mpass = mtech->createPass();
 		mtech->addPass(mpass);
-		pos = Vector2(600, 200);
+		pos = Vector2(400, 220);
 		mpass->setPosition(pos.x, pos.y);
 		ol->add2D(mpass->getRootContainer());
 
 		Material_TextureSampler* mt = new Material_TextureSampler("testMT");
-		mt->setPosition(800, 300);
-		mt->addToContainer(olc);
-		mt->setTextureName("Ogentext.png");
+		mt->setPosition(1000, 20);
+		ol->add2D(mt->getRootContainer());
+		mt->setTextureName("ColorQuad.tga");
 
+		Material_TextureSampler* mt2 = new Material_TextureSampler("testMT2");
+		mt2->setPosition(1000, 700);
+		ol->add2D(mt2->getRootContainer());
+		mt2->setTextureName("MtlPlat2.jpg");
 
-		ConnectionLine* c = new ConnectionLine(mpass->getInputSocket(0), mt->getOutputSocket(0));
+		Material_Vector4Constant* const4 = new Material_Vector4Constant("testMaterial_Vector4Constant");
+		const4->setPosition(1000, 400);
+		const4->addToContainer(olc);
+
+		Material_Multiply* addOp = new Material_Multiply("testMaterial_Add");
+		addOp->setPosition(800, 200);
+		ol->add2D(addOp->getRootContainer());
+
+		Material_Add* multiplyOp = new Material_Add("Material_Multiply");
+		multiplyOp->setPosition(600, 300);
+		ol->add2D(multiplyOp->getRootContainer());
+
+#if 0
+		ConnectionLine* c = new ConnectionLine(mpass->getInputSocket(0), multiplyOp->getOutputSocket(0));
 		c->addToContainer(olc);
+
+		c = new ConnectionLine(multiplyOp->getInputSocket(0), addOp->getOutputSocket(0));
+		c->addToContainer(olc);
+
+		c = new ConnectionLine(multiplyOp->getInputSocket(1), mt2->getOutputSocket(0));
+		c->addToContainer(olc);
+
+		c = new ConnectionLine(addOp->getInputSocket(0), mt->getOutputSocket(4));
+		c->addToContainer(olc);
+
+		c = new ConnectionLine(addOp->getInputSocket(1), const4->getOutputSocket(1));
+		c->addToContainer(olc);
+#elif 1
+		ConnectionLine* c = new ConnectionLine(mpass->getInputSocket(0), multiplyOp->getOutputSocket(0));
+		c->addToContainer(olc);
+
+		c = new ConnectionLine(multiplyOp->getInputSocket(0), addOp->getOutputSocket(0));
+		c->addToContainer(olc);
+
+		// if
+		c = new ConnectionLine(ifc->getInputSocket(0), const4->getOutputSocket(2));
+		c->addToContainer(olc);
+
+		c = new ConnectionLine(ifc->getInputSocket(1), sinTime->getOutputSocket(0));
+		c->addToContainer(olc);
+
+		c = new ConnectionLine(ifc->getInputSocket(2), sinTime->getOutputSocket(0));
+		c->addToContainer(olc);
+
+		c = new ConnectionLine(ifc->getInputSocket(3), sinTime->getOutputSocket(0));
+		c->addToContainer(olc);
+
+		c = new ConnectionLine(ifc->getInputSocket(4), mt2->getOutputSocket(0));
+		c->addToContainer(olc);
+
+		// multiply
+		c = new ConnectionLine(multiplyOp->getInputSocket(1), ifc->getOutputSocket(0));
+		c->addToContainer(olc);
+
+		c = new ConnectionLine(addOp->getInputSocket(0), mt->getOutputSocket(4));
+		c->addToContainer(olc);
+
+		c = new ConnectionLine(addOp->getInputSocket(1), /*const4*/aMaterial_SceneAmbient->getOutputSocket(0));
+		c->addToContainer(olc);
+
+#else
+		ConnectionLine* c = new ConnectionLine(mpass->getInputSocket(0), sinTime->getOutputSocket(0));
+		c->addToContainer(olc);
+#endif
 
 		_material = mroot->compile();
 		//MaterialSerializer ms;
@@ -414,7 +492,7 @@ protected:
 		pts.push_back(Vector2(500, 0));
 #	endif
 #endif
-		//loe->setMetricsMode(Ogre::GMM_PIXELS);
+		//loe->setMetricsMode(Fantasy::GMM_PIXELS);
 		loe->setPoints(pts);
 
 		loe = dynamic_cast<LineOverlayElement*>(om.createOverlayElement("Line", "line12"));
@@ -433,10 +511,10 @@ protected:
 		loe->setColour(ColourValue::Red);
 		loe->setPoints(pts);
 		
-		olc->setMetricsMode(Ogre::GMM_PIXELS);
+		olc->setMetricsMode(Fantasy::GMM_PIXELS);
 		olc->setDimensions(300, 100);
-		olc->setBorderSize(3, 3, 3, 3);
-		olc->setBorderMaterialName(head->getSubEntity(0)->getMaterialName());
+//		olc->setBorderSize(3, 3, 3, 3);
+//		olc->setBorderMaterialName(head->getSubEntity(0)->getMaterialName());
 #endif
 		/*
 		// Create nodes for the lights to be rotated with
@@ -516,13 +594,13 @@ protected:
 
 		// Light controller functions
 		mRedLightControllerFunc = ControllerFunctionRealPtr(
-            new MaterialLightFlasherControllerFunction(Ogre::WFT_SINE, 0.5, 0.0));
+            new MaterialLightFlasherControllerFunction(Fantasy::WFT_SINE, 0.5, 0.0));
 		mBlueLightControllerFunc = ControllerFunctionRealPtr(
-            new MaterialLightFlasherControllerFunction(Ogre::WFT_SINE, 0.75, 0.5));
+            new MaterialLightFlasherControllerFunction(Fantasy::WFT_SINE, 0.75, 0.5));
 		mYellowLightControllerFunc = ControllerFunctionRealPtr(
-            new MaterialLightFlasherControllerFunction(Ogre::WFT_TRIANGLE, 0.25, 0.0));
+            new MaterialLightFlasherControllerFunction(Fantasy::WFT_TRIANGLE, 0.25, 0.0));
 		mGreenLightControllerFunc = ControllerFunctionRealPtr(
-            new MaterialLightFlasherControllerFunction(Ogre::WFT_SINE, 0.25, 0.5));
+            new MaterialLightFlasherControllerFunction(Fantasy::WFT_SINE, 0.25, 0.5));
 
 		// Light controllers
 		ControllerManager* mControllerManager = &ControllerManager::getSingleton();
@@ -584,8 +662,8 @@ protected:
 		animState->setEnabled(true);
 		mAnimStateList.push_back(animState);
 
-		trail->setInitialColour(0, 1.0, 0.8, 0);
-		trail->setColourChange(0, 0.1, 0.1, 0.1, 0.1);
+		trail->setInitialColour(0, 1.0f, 0.8f, 0);
+		trail->setColourChange(0, 0.1f, 0.1f, 0.1f, 0.1f);
 		trail->setInitialWidth(0, 5);
 		trail->setWidthChange(0, 0);
 		//trail->setInitialWidth(0, 100);
@@ -629,8 +707,8 @@ protected:
 		animState->setEnabled(true);
 		mAnimStateList.push_back(animState);
 
-		trail->setInitialColour(1, 0.0, 1.0, 0.4);
-		trail->setColourChange(1, 0.5, 0.5, 0.5, 0.5);
+		trail->setInitialColour(1, 0.0f, 1.0f, 0.4f);
+		trail->setColourChange(1, 0.5f, 0.5f, 0.5f, 0.5f);
 		//trail->setColourChange(1, ColourValue::ZERO);
 		trail->addNode(animNode);
 
